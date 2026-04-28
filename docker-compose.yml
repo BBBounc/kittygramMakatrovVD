@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: kittygram_db
+    environment:
+      POSTGRES_DB: kittygram_db
+      POSTGRES_USER: kittygram_user
+      POSTGRES_PASSWORD: kittygram_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    container_name: kittygram_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=kittygram_db
+      - DB_USER=kittygram_user
+      - DB_PASSWORD=kittygram_password
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
